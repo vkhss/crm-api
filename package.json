@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node ./src/index.ts\"",
     "build": "tsc",
-    "start": "node ./dist/index.js",
+    "start": "node ./dist/index.ts",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
@@ -34,6 +34,6 @@
     "@types/moment": "^2.13.0",
     "@types/mongoose": "^5.11.97",
     "@types/nodemon": "^1.19.1",
-    "ts-node": "^10.8.2"
+    "ts-node": "^10.9.1"
   }
 }
