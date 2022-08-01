@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 4000
 
-# CMD nodemon -L --watch . src/index.ts
+CMD nodemon -L --watch . src/index.ts
