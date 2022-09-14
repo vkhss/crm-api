@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:11-alpine
 
 WORKDIR /node-app
 
@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 4000
 
-CMD nodemon -L . src/index.ts
+CMD nodemon -L --watch . src/index.ts

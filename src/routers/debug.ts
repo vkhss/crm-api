@@ -1,11 +1,9 @@
 import express from 'express'
-import bodyParser from 'body-parser'
+import debugController from '../controllers/debug';
 
 const debugRouter = express.Router();
 
-debugRouter.post('/api/debug-sentry', () => {
-        throw new Error('Debug Sentry')
-
-})
+debugRouter.post('/api/debug', debugController.postDebug)
+debugRouter.get('/api/debug', debugController.getDebug)
 
 export default debugRouter
