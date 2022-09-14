@@ -1,8 +1,8 @@
 import 'dotenv/config';
-import express, { Request, Response, NextFunction } from 'express'
+import express, { NextFunction } from 'express'
 import customerRouter from './routers/customers'
 import debugRouter from './routers/debug';
-import { MonitoringService } from './monitoring/services/monitoring.service'
+import { MonitoringService } from './adapters/monitoring/monitoring.service'
 
 const monitoring = new MonitoringService()
 
@@ -19,8 +19,7 @@ app.use('/', customerRouter);
 app.use('/', debugRouter)
 
 app.use((error: Error, req: any, res: any, next: NextFunction) => {
-
-    monitoring.noticeError(error, req)
+    monitoring.fatal("INTERNAL SERVER ERROR", { request: req, response: res })
     res.status(500).json(error)
     next();
 })

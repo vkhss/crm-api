@@ -1,7 +1,8 @@
 import { Request } from 'express';
 import ElasticApmNode from 'elastic-apm-node'
-import monitoringConfiguration from '../monitoring.configuration';
-import { IMonitoring } from '../monitoring.interface';
+import ElasticConfig from './elastic.configuration'
+import monitoringConfiguration from '../../monitoring.configuration';
+import { IMonitoring } from '../../monitoring.interface';
 
 export class ElasticAPMService implements IMonitoring {
 
@@ -10,7 +11,9 @@ export class ElasticAPMService implements IMonitoring {
     }
     public init(): void {
         if (monitoringConfiguration.INIT_ELASTIC && !ElasticApmNode.isStarted()) {
-            ElasticApmNode.start()
+
+            console.log({ElasticConfig})
+            ElasticApmNode.start(ElasticConfig)
         }
     }
 

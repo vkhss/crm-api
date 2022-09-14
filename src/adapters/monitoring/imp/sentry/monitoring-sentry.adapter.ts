@@ -1,7 +1,10 @@
-import { Request } from 'express';
 import * as Sentry from '@sentry/node';
-import { IMonitoring } from '../monitoring.interface';
-import monitoringConfiguration from '../monitoring.configuration';
+import { Request } from 'express';
+import SentryConfig from "./sentry.configuration"
+import { IMonitoring } from '../../monitoring.interface';
+import monitoringConfiguration from '../../monitoring.configuration';
+
+import { SeverityLevel } from './severity-level.enum'
 
 export class SentryService implements IMonitoring {
     private prefix = '';
@@ -12,7 +15,7 @@ export class SentryService implements IMonitoring {
 
     public init() {
         if (monitoringConfiguration.INIT_SENTRY)
-            Sentry.init(SentryAdapterConfig);
+            Sentry.init(SentryConfig);
     }
 
     async captureTrace(message: string, data: { [x: string]: unknown }, level?: Sentry.SeverityLevel, path?: string) {
@@ -48,11 +51,11 @@ export class SentryService implements IMonitoring {
 
     private static getSeverity(severity?: Sentry.SeverityLevel): Sentry.SeverityLevel {
         switch (severity) {
-            case Sentry.SeverityLevel.WARN:
+            case SeverityLevel.WARN:
                 return 'warning';
-            case Sentry.SeverityLevel.ERROR:
+            case SeverityLevel.ERROR:
                 return 'error';
-            case Sentry.SeverityLevel.FATAL:
+            case SeverityLevel.FATAL:
                 return 'fatal';
             default:
                 return 'error';

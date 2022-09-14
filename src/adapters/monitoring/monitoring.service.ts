@@ -1,7 +1,7 @@
-import { IMonitoring, ILogger } from '../interfaces/monitoring.interface'
-import { SentryService } from "../adapters/sentry.adapter";
-import { ElasticAPMService } from "../adapters/elastic.adapter";
-import { SeverityLevel } from '../config/severity-level.enum'
+import { IMonitoring, ILogger } from './monitoring.interface'
+import { SentryService } from "./imp/sentry/monitoring-sentry.adapter";
+import { ElasticAPMService } from "./imp/elastic/monitoring-elastic.adapter"
+import { SeverityLevel } from './imp/sentry/severity-level.enum'
 import { Request } from 'express';
 
 export class MonitoringService implements ILogger {
