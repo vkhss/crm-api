@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import ElasticApmNode from 'elastic-apm-node'
-import { IMonitoring } from '../interfaces/monitoring.interface'
-import monitoringConfiguration from '../config/monitoring.configuration'
+import monitoringConfiguration from '../monitoring.configuration';
+import { IMonitoring } from '../monitoring.interface';
 
 export class ElasticAPMService implements IMonitoring {
 
