@@ -11,6 +11,7 @@ export class ElasticAPMService implements IMonitoring {
     public init(): void {
         if (monitoringConfiguration.INIT_ELASTIC && !ElasticApmNode.isStarted()) {
             ElasticApmNode.start()
+            console.log("Elastic APM node Started!")
         }
     }
 

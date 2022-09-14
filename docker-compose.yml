@@ -3,6 +3,18 @@ services:
   app:
     build: .
     container_name: nodejs-container
+    environment:
+      # ENV's: development
+      #Elastic
+      ELASTIC_APM_ENVIRONMENT: local
+      ELASTIC_APM_SECRET_TOKEN: asAtMxm9rf7c4CICr1
+      ELASTIC_APM_SERVICE_NAME: poc-wol
+      ELASTIC_APM_ENABLED: 'true'
+      ELASTIC_APM_SERVER_URL: 'https://8231c12a367743ccb1a5cdce0599d01f.apm.us-central1.gcp.cloud.es.io:443'
+      
+      #Sentry
+      SENTRY_DSN: https://458d2eb03b0d419f85d11f800be59463@o1365350.ingest.sentry.io/6661024
+      SENTRY_ENVIRONMENT: 'localhost'
     volumes:
       - ./:/node-app
       - ./node_modules:/node-app/node_modules

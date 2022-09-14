@@ -19,11 +19,10 @@ export class MonitoringService implements ILogger {
     public async captureCodeEvent(params: any) {
         const errorMessage = params.briefDescription
         const info = params.jsonInfoObject
-        let path = params.request ? params.request.path ? params.request.path : "unknown" : "unknown"
         params.level = params.level?.toLocaleLowerCase()
 
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(errorMessage, info, params.level, path)
+            service.captureTrace(errorMessage, info, params.level)
         })
     }
 
@@ -33,34 +32,34 @@ export class MonitoringService implements ILogger {
         })
     }
 
-    public fatal(message: string, data: { [x: string]: unknown; }, path?: string): void {
+    public fatal(message: string, data: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "fatal", path)
+            service.captureTrace(message, data, "fatal")
         })
     }
 
-    public error(message: string, data: { [x: string]: unknown; }, path?: string): void {
+    public error(message: string, data: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "error", path)
+            service.captureTrace(message, data, "error")
         })
 
     }
 
-    public info(message: string, data: { [x: string]: unknown; }, path?: string): void {
+    public info(message: string, data: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "info", path)
+            service.captureTrace(message, data, "info")
         })
     }
 
-    public warn(message: string, data: { [x: string]: unknown; }, path?: string): void {
+    public warn(message: string, data: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "warning", path)
+            service.captureTrace(message, data, "warning")
         })
     }
 
-    public debug(message: string, data: { [x: string]: unknown; }, path?: string): void {
+    public debug(message: string, data: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "debug", path)
+            service.captureTrace(message, data, "debug")
         })
     }
 }

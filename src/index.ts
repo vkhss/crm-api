@@ -20,7 +20,8 @@ app.use('/', debugRouter)
 
 app.use((error: Error, req: any, res: any, next: NextFunction) => {
 
-    monitoring.noticeError(error, req)
+    monitoring.fatal('INTERNAL SERVER ERROR', { request: req, response: res })
+
     res.status(500).json(error)
     next();
 })
