@@ -1,9 +1,9 @@
-import { Request } from 'express';
 import * as Sentry from '@sentry/node';
 import { SeverityLevel } from './severity-level.enum'
 import { IMonitoring } from '../../monitoring.interface'
 import SentryAdapterConfig from './sentry.configuration';
 import monitoringConfiguration from '../../monitoring.configuration'
+import apm from 'elastic-apm-node'
 
 export class SentryService implements IMonitoring {
     private prefix = '';
@@ -17,35 +17,29 @@ export class SentryService implements IMonitoring {
             Sentry.init(SentryAdapterConfig);
     }
 
-    async captureTrace(message: string, data: { [x: string]: unknown }, level?: SeverityLevel, path?: string) {
-        console.log(`Manda o trace de ${level ? level : "error"} para o sentry!`)
-        Sentry.captureMessage(`${this.prefix} ${message}`.trim(), {
-            level: level ? level : "error",
-            tags: {
-                path: path ? path : "unknown"
-            },
+    async captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData: { [x: string]: unknown }) {
+        if (transactionStatus == "info" || transactionStatus == "debug") return;
+
+        console.log(`Manda o trace de ${transactionStatus ? transactionStatus : "error"} para o sentry!`)
+
+        Sentry.captureMessage(`${this.prefix} ${transactionName}`.trim(), {
+            level: transactionStatus,
             extra: {
-                info: data
+                info: transactionData,
+                apmTransactionIds: apm.currentTransaction?.ids
             }
         });
     }
 
-    async captureError(error: Error, level?: SeverityLevel, req?: Request) {
+    async captureError(transactionName: string, transactionStatus: SeverityLevel, transactionError: Error) {
         console.log(`Manda o erro para o sentry!`)
-        if (req) {
-            let { path, body, params } = req
-            Sentry.captureMessage(JSON.stringify(error.message || error), {
-                level: SentryService.getSeverity(level),
-                tags: {
-                    path,
-                },
-                extra: {
-                    error: JSON.stringify(error),
-                    body,
-                    params
-                }
-            });
-        }
+        Sentry.captureMessage(JSON.stringify(transactionError.message || transactionError), {
+            level: SentryService.getSeverity(transactionStatus),
+            extra: {
+                error: JSON.stringify(transactionError),
+                apmTransactionIds: apm.currentTransaction?.ids
+            }
+        });
     }
 
     private static getSeverity(severity?: SeverityLevel): Sentry.SeverityLevel {

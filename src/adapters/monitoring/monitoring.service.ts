@@ -1,8 +1,6 @@
 import { IMonitoring, ILogger } from './monitoring.interface'
 import { SentryService } from "../monitoring/imp/sentry/sentry.adapter";
 import { ElasticAPMService } from "../monitoring/imp/elastic/elastic.adapter";
-import { SeverityLevel } from '../monitoring/imp/sentry/severity-level.enum'
-import { Request } from 'express';
 
 export class MonitoringService implements ILogger {
 
@@ -16,50 +14,33 @@ export class MonitoringService implements ILogger {
         this.errorAdapters.push(...[this.sentryService, this.elasticService])
     }
 
-    public async captureCodeEvent(params: any) {
-        const errorMessage = params.briefDescription
-        const info = params.jsonInfoObject
-        params.level = params.level?.toLocaleLowerCase()
-
+    public error(transactionName: string, transactionData: Error): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(errorMessage, info, params.level)
+            service.captureError(transactionName, "error", transactionData)
         })
     }
 
-    public async noticeError(error: Error, level?: SeverityLevel, req?: Request) {
+    public fatal(transactionName: string, transactionData: Error): void {
         this.errorAdapters.forEach((service) => {
-            service.captureError(error, level, req)
+            service.captureError(transactionName, "fatal", transactionData)
         })
     }
 
-    public fatal(message: string, data: { [x: string]: unknown; }): void {
+    public warn(transactionName: string, transactionData: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "fatal")
+            service.captureTrace(transactionName, "warning", transactionData)
         })
     }
 
-    public error(message: string, data: { [x: string]: unknown; }): void {
+    public info(transactionName: string, transactionData: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "error")
-        })
-
-    }
-
-    public info(message: string, data: { [x: string]: unknown; }): void {
-        this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "info")
+            service.captureTrace(transactionName, "info", transactionData)
         })
     }
 
-    public warn(message: string, data: { [x: string]: unknown; }): void {
+    public debug(transactionName: string, transactionData: { [x: string]: unknown; }): void {
         this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "warning")
-        })
-    }
-
-    public debug(message: string, data: { [x: string]: unknown; }): void {
-        this.errorAdapters.forEach((service) => {
-            service.captureTrace(message, data, "debug")
+            service.captureTrace(transactionName, "debug", transactionData)
         })
     }
 }

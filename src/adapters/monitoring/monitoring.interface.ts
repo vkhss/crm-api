@@ -4,13 +4,14 @@ import { Request } from 'express';
 
 export interface IMonitoring {
     init(): void
-    captureTrace(message: string, data: { [x: string]: unknown }, level?: string, path?: string): Promise<void>;
-    captureError(error: Error, level?: SeverityLevel, req?: Request): Promise<void>;
+    captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData: { [x: string]: unknown }): Promise<void>;
+    captureError(transactionName: string, transactionStatus: SeverityLevel, transactionError: Error): Promise<void>;
 }
 
 export interface ILogger {
-    info(message: string, data?: ObjectInfo, path?: string): void;
-    warn(message: string, data?: ObjectInfo, path?: string): void;
-    error(message: string, data?: ObjectInfo, path?: string): void;
-    debug(message: string, data?: ObjectInfo, path?: string): void;
+    error(transactionName: string, transactionData?: Error): void;
+    fatal(transactionName: string, transactionData?: Error): void;
+    info(transactionName: string, data?: ObjectInfo): void;
+    warn(transactionName: string, data?: ObjectInfo): void;
+    debug(transactionName: string, data?: ObjectInfo): void;
 }

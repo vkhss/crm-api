@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import ElasticApmNode from 'elastic-apm-node'
+import apm, { Transaction } from 'elastic-apm-node'
 import { IMonitoring } from '../../monitoring.interface'
 import monitoringConfiguration from '../../monitoring.configuration'
 
@@ -9,20 +9,18 @@ export class ElasticAPMService implements IMonitoring {
         this.init()
     }
     public init(): void {
-        if (monitoringConfiguration.INIT_ELASTIC && !ElasticApmNode.isStarted()) {
-            ElasticApmNode.start()
-            console.log("Elastic APM node Started!")
-        }
+        // if (monitoringConfiguration.INIT_ELASTIC && !apm.isStarted()) {
+        //     console.log("Iniciando Configuração do APM!")
+            
+        //     console.log("Finalizou Inicialização do APM!")
+        // }
     }
 
-    async captureTrace(essage: string, data: { [x: string]: unknown }, level?: string, path?: string) { //CaptureCodeEvent 
-        console.log(`Manda o trace de ${level ? level : "error"} para o elastic!`)
-
-        //Implementar Tracing Elastic
+    async captureTrace(transactionName: string, status: string, transactionData: { [x: string]: unknown }) { //CaptureCodeEvent 
+        console.log(`Manda o trace de ${status ? status : "error"} para o elastic!`)
     }
 
-    async captureError(error: Error, severity?: string, req?: Request) { //NoticeError 
-        console.log(`Manda o erro para o elastic!`)
-        ElasticApmNode.captureError(error)
+    async captureError(transactionName: string, status: string, transactionError: Error) { //NoticeError 
+        apm.captureError(transactionError)
     }
 }

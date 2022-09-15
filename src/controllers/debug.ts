@@ -13,7 +13,6 @@ const postDebug = async (req: Request, res: Response, next: NextFunction) => {
     try {
         throw new Error("ERRO NA ROTA POST DEBUG!")
     } catch (error) {
-        logger.error("INTERNAL SERVER ERROR", { request: req, response: res })
         next(error);
     }
 }
