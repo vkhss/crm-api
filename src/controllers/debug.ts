@@ -11,7 +11,8 @@ const getDebug = async (req: Request, res: Response, next: NextFunction) => {
 
 const postDebug = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        throw new Error("ERRO NA ROTA POST DEBUG!")
+        throw "ERRO NA ROTA POST DEBUG!"
+
     } catch (error) {
         next(error);
     }

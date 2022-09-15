@@ -10,13 +10,11 @@ const PORT = process.env.PORT
 
 const app = express()
 
-console.log("Iniciando Setup do Elastic");
-apm.start()
-console.log("Finalizando Setup do Elastic");
+const logger = new MonitoringService()
+
 console.log({ apmIsStarted: apm.isStarted() })
 console.log({ apmTransactionIds: apm.currentTransaction?.ids })
 
-const logger = new MonitoringService()
 
 app.use('/', customerRouter);
 app.use('/', debugRouter)

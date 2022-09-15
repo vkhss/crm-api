@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node';
-import { SeverityLevel } from './severity-level.enum'
+import { SeverityLevel } from './sentry-severity.enum'
 import { IMonitoring } from '../../monitoring.interface'
 import SentryAdapterConfig from './sentry.configuration';
 import monitoringConfiguration from '../../monitoring.configuration'
