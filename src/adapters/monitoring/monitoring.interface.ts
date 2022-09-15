@@ -9,7 +9,6 @@ export interface IMonitoring {
 }
 
 export interface ILogger {
-    fatal(message: string, data?: ObjectInfo, path?: string): void;
     info(message: string, data?: ObjectInfo, path?: string): void;
     warn(message: string, data?: ObjectInfo, path?: string): void;
     error(message: string, data?: ObjectInfo, path?: string): void;
