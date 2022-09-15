@@ -1,13 +1,16 @@
 import { NextFunction, Request, Response } from 'express'
-import { MonitoringService } from '../monitoring/services/monitoring.service'
+import { WinstonService } from '../adapters/monitoring/imp/winston/monitoring-winston.adapter'
 
-const monitoring = new MonitoringService()
-
+const logger = new WinstonService()
 
 const getDebug = async (req: Request, res: Response, next: NextFunction) => {
 
+<<<<<<< HEAD
     monitoring.warn("REQUEST OK", { results: "OK" })
 
+=======
+    logger.info("REQUEST ANTES DE SER ENVIADA PARA A ROTA", { req,  CPF: "448.XXX.XXX.XXX" })
+>>>>>>> design
     return res.status(200).json({ results: "OK" })
 }
 
@@ -15,6 +18,10 @@ const postDebug = async (req: Request, res: Response, next: NextFunction) => {
     try {
         throw new Error("ERRO NA ROTA POST DEBUG!")
     } catch (error) {
+<<<<<<< HEAD
+=======
+        await logger.error("INTERNAL SERVER ERROR", { request: req, response: res })
+>>>>>>> design
         next(error);
     }
 }

@@ -1,6 +1,6 @@
 type ObjectInfo = Record<string, unknown>;
+import { SeverityLevel } from '@sentry/node';
 import { Request } from 'express';
-import { SeverityLevel } from '../config/severity-level.enum';
 
 export interface IMonitoring {
     init(): void
@@ -9,7 +9,6 @@ export interface IMonitoring {
 }
 
 export interface ILogger {
-    fatal(message: string, data?: ObjectInfo, path?: string): void;
     info(message: string, data?: ObjectInfo, path?: string): void;
     warn(message: string, data?: ObjectInfo, path?: string): void;
     error(message: string, data?: ObjectInfo, path?: string): void;
