@@ -1,39 +1,30 @@
-import { SeverityLevel } from './stackdrive-severity.enum'
+import { SeverityLevel } from './stackdriver-severity.enum'
 import { IMonitoring } from '../../monitoring.interface'
 import * as StackDriver from '@google-cloud/logging'
-import loggingConfig from './stackdrive.config'
+import apm from 'elastic-apm-node'
+
+
 export class StackDriverService implements IMonitoring {
 
-    private logging: StackDriver.Logging
-    private log: StackDriver.Log
-
-    constructor() {
-        this.logging = new StackDriver.Logging({ projectId: loggingConfig.projectId })
-        this.log = this.logging.log(loggingConfig['log-name'])
-    }
-
     public init(): void {
-
     }
 
     public async captureError(transactionName: string, transactionStatus: SeverityLevel, transactionError: Error): Promise<void> {
-        const metadata = {
-            resource: { type: 'global' },
+        console.log(JSON.stringify({
+            transactionIds: apm.currentTransaction?.ids,
             severity: StackDriverService.getSeverity(transactionStatus),
-        };
-        console.log(metadata)
-        const entry = this.log.entry(metadata, transactionName);
-        await this.log.write(entry);
+            name: transactionName,
+            error: transactionError
+        }))
     }
 
-    public async captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData: { [x: string]: unknown }): Promise<void> {
-        const metadata = {
-            resource: { type: 'global' },
+    public async captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData: unknown): Promise<void> {
+        console.log(JSON.stringify({
+            transactionIds: apm.currentTransaction?.ids,
             severity: StackDriverService.getSeverity(transactionStatus),
-        };
-        console.log(metadata)
-        const entry = this.log.entry(metadata, transactionName);
-        await this.log.write(entry);
+            name: transactionName,
+            data: transactionData
+        }))
     }
 
 

@@ -4,7 +4,7 @@ import { Request } from 'express';
 
 export interface IMonitoring {
     init(): void
-    captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData: { [x: string]: unknown }): Promise<void>;
+    captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData: unknown): Promise<void>;
     captureError(transactionName: string, transactionStatus: SeverityLevel, transactionError: Error): Promise<void>;
 }
 

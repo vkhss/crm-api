@@ -5,7 +5,8 @@ export default {
         'email',
         'password',
         'name',
-        'token'
+        'token',
+        'cpf'
     ],
     'BLOCK_STATUS': [401, 422]
 }

@@ -17,7 +17,7 @@ export class SentryService implements IMonitoring {
             Sentry.init(SentryAdapterConfig);
     }
 
-    async captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData: { [x: string]: unknown }) {
+    async captureTrace(transactionName: string, transactionStatus: SeverityLevel, transactionData:unknown) {
         if (transactionStatus == "info" || transactionStatus == "debug") return;
 
         console.log(`Manda o trace de ${transactionStatus ? transactionStatus : "error"} para o sentry!`)

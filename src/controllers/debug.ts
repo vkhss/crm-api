@@ -4,7 +4,7 @@ import { MonitoringService } from '../adapters/monitoring/monitoring.service'
 const logger = new MonitoringService()
 
 const getDebug = async (req: Request, res: Response, next: NextFunction) => {
-    logger.warn("REQUEST OK", { results: "OK" })
+    logger.warn("REQUEST OK", [{ cpf: "44808709899" }])
 
     return res.status(200).json({ results: "OK" })
 }

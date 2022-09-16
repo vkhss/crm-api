@@ -10,7 +10,7 @@ export class ElasticAPMService implements IMonitoring {
       
     }
 
-    async captureTrace(transactionName: string, status: string, transactionData: { [x: string]: unknown }) { //CaptureCodeEvent 
+    async captureTrace(transactionName: string, status: string, transactionData: unknown) { //CaptureCodeEvent 
 
     }
 
