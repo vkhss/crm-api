@@ -1,20 +1,18 @@
 import 'dotenv/config';
 import express, { NextFunction } from 'express'
+import * as apm from 'elastic-apm-node';
 import customerRouter from './routers/customers'
 import debugRouter from './routers/debug';
-import { MonitoringService } from './adapters/monitoring/monitoring.service';
+import { logger } from './instances';
 
-import apm from 'elastic-apm-node';
 const HOST = process.env.HOST
 const PORT = process.env.PORT
 
 const app = express()
 
-const logger = new MonitoringService()
+apm.start({ captureSpanStackTraces: false });
 
-console.log({ apmIsStarted: apm.isStarted() })
-console.log({ apmTransactionIds: apm.currentTransaction?.ids })
-
+app.use(apm.middleware.connect());
 
 app.use('/', customerRouter);
 app.use('/', debugRouter)

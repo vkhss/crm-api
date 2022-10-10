@@ -1,20 +1,14 @@
-import apm from 'elastic-apm-node'
-import { IMonitoring } from '../../monitoring.interface'
+import * as apm from 'elastic-apm-node';
+
+import { IMonitoring } from '../imp.interfaces';
 
 export class ElasticAPMService implements IMonitoring {
+  init() {}
 
-    constructor() {
-        this.init()
-    }
-    public init(): void {
-      
-    }
+  captureTrace() {}
 
-    async captureTrace(transactionName: string, status: string, transactionData: unknown) { //CaptureCodeEvent 
-
-    }
-
-    async captureError(transactionName: string, status: string, transactionError: Error) { //NoticeError 
-        apm.captureError(transactionError)
-    }
+  captureError(transactionData: any) {
+    const error = new Error(transactionData);
+    apm.captureError(error);
+  }
 }
