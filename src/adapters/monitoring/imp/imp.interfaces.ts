@@ -2,17 +2,23 @@ type ObjectInfo = Record<string, unknown>;
 import { SeverityLevel } from '@sentry/node';
 
 export interface IMonitoring {
-  init(monitoringConfiguration?: IMonitoringConfig);
-  captureTrace(
-    transactionName?: string,
-    transactionStatus?: SeverityLevel,
-    transactionData?: unknown,
-  );
-  captureError(
-    transactionName?: string,
-    transactionStatus?: SeverityLevel,
-    transactionData?: unknown,
-  );
+
+  monitoringInit: {
+    init(monitoringConfiguration?: IMonitoringConfig): void
+  };
+
+  monitoringCapture: {
+    captureTrace(
+      transactionName?: string,
+      transactionStatus?: SeverityLevel,
+      transactionData?: unknown,
+    ): void;
+    captureError(
+      transactionName?: string,
+      transactionStatus?: SeverityLevel,
+      transactionData?: unknown,
+    ): void;
+  }
 }
 
 export interface ILogger {

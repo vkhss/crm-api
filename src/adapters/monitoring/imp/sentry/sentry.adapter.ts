@@ -2,13 +2,22 @@ import * as Sentry from '@sentry/node';
 import * as apm from 'elastic-apm-node';
 
 import { IMonitoring, IMonitoringConfig } from '../imp.interfaces';
-import { SeverityLevel } from './sentry-severity.enum';
+import { SeverityLevel } from '../imp.severity.enum';
 
 const SENTRY_DSN = process.env.SENTRY_DSN;
 const SENTRY_ENV = process.env.SENTRY_ENV;
 
-export class SentryService implements IMonitoring {
-  init(config: IMonitoringConfig) {
+export type InitAndCapture = IMonitoring['monitoringInit'] extends IMonitoring['monitoringInit'];
+
+export class SentryService implements InitAndCapture {
+
+  private static severities: Record<string, Sentry.SeverityLevel> = {
+    [SeverityLevel.WARN]: 'warning',
+    [SeverityLevel.ERROR]: 'error',
+    [SeverityLevel.FATAL]: 'fatal',
+  }
+
+  public init(config: IMonitoringConfig) {
     if (config.INIT_SENTRY)
       Sentry.init({
         dsn: SENTRY_DSN,
@@ -17,7 +26,7 @@ export class SentryService implements IMonitoring {
       });
   }
 
-  captureTrace(
+  public captureTrace(
     transactionName: string,
     transactionStatus: SeverityLevel,
     transactionData: unknown,
@@ -32,7 +41,7 @@ export class SentryService implements IMonitoring {
     });
   }
 
-  captureError(
+  public captureError(
     transactionName: string,
     transactionStatus: SeverityLevel,
     transactionData: unknown,
@@ -46,16 +55,7 @@ export class SentryService implements IMonitoring {
     });
   }
 
-  private static getSeverity(severity?: SeverityLevel): Sentry.SeverityLevel {
-    switch (severity) {
-      case SeverityLevel.WARN:
-        return 'warning';
-      case SeverityLevel.ERROR:
-        return 'error';
-      case SeverityLevel.FATAL:
-        return 'fatal';
-      default:
-        return 'error';
-    }
+  private static getSeverity(severity: SeverityLevel): Sentry.SeverityLevel {
+    return SentryService.severities[severity] || 'error'
   }
 }
