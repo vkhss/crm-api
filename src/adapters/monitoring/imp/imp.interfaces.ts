@@ -2,33 +2,34 @@ import { SeverityLevel } from './severity.level.enum';
 
 export type ObjectTags = Record<string, string>;
 
-export type ErrorLog = {
-  transactionName: string;
-  transactionError?: Error;
-  transactionData?: object;
-  transactionTags?: ObjectTags;
-};
 export type TraceLog = {
   transactionName: string;
   transactionData: object;
   transactionTags?: ObjectTags;
 };
 
+export type ErrorLog = {
+  transactionName: string;
+  transactionError?: Error | unknown | undefined;
+  transactionData?: object;
+  transactionTags?: ObjectTags;
+};
+
 export interface IMonitoring {
-  init(monitoringConfiguration?: IMonitoringConfig): any;
+  init(monitoringConfiguration?: IMonitoringConfig): void;
   captureTrace(
     transactionName: string,
     transactionStatus: SeverityLevel,
     transactionData?: object,
     transactionTags?: ObjectTags
-  ): any;
+  ): void;
   captureError(
     transactionName: string,
-    transactionError?: Error,
+    transactionError?: Error | unknown | undefined,
     transactionStatus?: SeverityLevel,
     transactionData?: object,
     transactionTags?: ObjectTags
-  ): any;
+  ): void;
 }
 
 export interface ILogger {
