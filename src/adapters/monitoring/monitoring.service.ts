@@ -1,100 +1,112 @@
-import impConfig from './imp/imp.configuration'
-import { ImpFactory } from './imp/imp.factory'
-import { IMonitoring, ILogger } from './imp/imp.interfaces'
-import { SeverityLevel } from './imp/imp.severity.enum'
+import impConfig from './imp/imp.configuration';
+import { ImpFactory } from './imp/imp.factory';
+import { IMonitoring, ILogger, ErrorLog, TraceLog } from './imp/imp.interfaces';
+import { SeverityLevel } from './imp/severity.level.enum';
 
 export class MonitoringService implements ILogger {
-  private adapters: IMonitoring[] = ImpFactory.getInstance()
+  private adapters: IMonitoring[] = ImpFactory.getInstance();
 
-  private static instance: MonitoringService
+  private static instance: MonitoringService;
 
   public static getInstance(): MonitoringService {
     if (!this.instance) {
-      this.instance = new MonitoringService()
+      this.instance = new MonitoringService();
     }
-    return this.instance
+    return this.instance;
   }
 
   public startMonitoring() {
-    this.adapters.forEach((service) => {
-      service.monitoringInit.init(impConfig)
-    })
+    this.adapters.forEach(service => {
+      service.init(impConfig);
+    });
   }
 
-  public error(transactionName: string, transactionData: unknown) {
-    this.adapters.forEach((service) => {
-      service.monitoringCapture.captureError(
-        transactionName,
+  public error(data: ErrorLog) {
+    this.adapters.forEach(service => {
+      service.captureError(
+        data.transactionName,
+        data.transactionError,
         SeverityLevel.ERROR,
-        transactionData,
-      )
-    })
+        data.transactionData,
+        data.transactionTags
+      );
+    });
   }
 
-  public fatal(transactionName: string, transactionData: unknown) {
-    this.adapters.forEach((service) => {
-      service.monitoringCapture.captureError(
-        transactionName,
+  public fatal(data: ErrorLog) {
+    this.adapters.forEach(service => {
+      service.captureError(
+        data.transactionName,
+        data.transactionError,
         SeverityLevel.FATAL,
-        transactionData,
-      )
-    })
+        data.transactionData,
+        data.transactionTags
+      );
+    });
   }
 
-  public async warn(transactionName: string, transactionData: unknown) {
+  public async warn(data: TraceLog) {
     const maskedData = await this.sanatizeObject(
-      transactionData,
-      impConfig.FIELD_MASK,
-    )
-    this.adapters.forEach((service) => {
-      service.monitoringCapture.captureTrace(transactionName, SeverityLevel.WARN, maskedData)
-    })
+      data.transactionData,
+      impConfig.FIELD_MASK
+    );
+    this.adapters.forEach(service => {
+      service.captureTrace(
+        data.transactionName,
+        SeverityLevel.WARN,
+        maskedData,
+        data.transactionTags
+      );
+    });
   }
 
-  public async info(transactionName: string, transactionData: unknown) {
+  public async info(data: TraceLog) {
     const maskedData = await this.sanatizeObject(
-      transactionData,
-      impConfig.FIELD_MASK,
-    )
-    this.adapters.forEach((service) => {
-      service.monitoringCapture.captureTrace(transactionName, SeverityLevel.INFO, maskedData)
-    })
+      data.transactionData,
+      impConfig.FIELD_MASK
+    );
+    this.adapters.forEach(service => {
+      service.captureTrace(
+        data.transactionName,
+        SeverityLevel.INFO,
+        maskedData,
+        data.transactionTags
+      );
+    });
   }
 
-  public async debug(transactionName: string, transactionData: unknown) {
+  public async debug(data: TraceLog) {
     const maskedData = await this.sanatizeObject(
-      transactionData,
-      impConfig.FIELD_MASK,
-    )
-    this.adapters.forEach((service) => {
-      service.monitoringCapture.captureTrace(transactionName, SeverityLevel.DEBUG, maskedData)
-    })
+      data.transactionData,
+      impConfig.FIELD_MASK
+    );
+    this.adapters.forEach(service => {
+      service.captureTrace(
+        data.transactionName,
+        SeverityLevel.DEBUG,
+        maskedData,
+        data.transactionTags
+      );
+    });
   }
 
-  private async sanatizeObject(
-    data: unknown,
-    fiedsToRemove?: string[],
-  ): Promise<unknown> {
-    if (!fiedsToRemove || fiedsToRemove.length === 0) return data
-    const encryptFiels = async (
-      obj: any,
-      fields: string[],
-    ): Promise<unknown> => {
+  private async sanatizeObject(data: any, fiedsToRemove?: string[]): Promise<any> {
+    if (!fiedsToRemove || fiedsToRemove.length === 0) return data;
+    const encryptFiels = async (obj: any, fields: string[]): Promise<any> => {
       if (Array.isArray(obj) && obj.length > 1) {
-        for (const object of obj) await encryptFiels(object, fields)
+        for (const object of obj) await encryptFiels(object, fields);
       }
       if (typeof obj === 'object') {
         for (const field in obj) {
-          if (typeof obj[field] === 'object')
-            await encryptFiels(obj[field], fields)
+          if (typeof obj[field] === 'object') await encryptFiels(obj[field], fields);
           if (fields.includes(field)) {
-            obj[field] = '[redacted]'
-            continue
+            obj[field] = '[redacted]';
+            continue;
           }
         }
       }
-      return obj
-    }
-    return encryptFiels(data, fiedsToRemove)
+      return obj;
+    };
+    return encryptFiels(data, fiedsToRemove);
   }
 }

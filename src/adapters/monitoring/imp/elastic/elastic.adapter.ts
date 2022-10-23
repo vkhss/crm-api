@@ -1,12 +1,13 @@
-import * as apm from 'elastic-apm-node';
-
-export type MonitoringError = Omit<IMonitoring['monitoringCapture'], 'captureTrace'>;
+import ElasticAgent from 'elastic-apm-node';
 
 import { IMonitoring } from '../imp.interfaces';
 
-export class ElasticAPMService implements MonitoringError {
-  public captureError(transactionData: any) {
-    const error = new Error(transactionData);
-    apm.captureError(error);
+export class ElasticAPMService implements IMonitoring {
+  public init() {}
+
+  public captureTrace() {}
+
+  public captureError(transactionName: string, transactionError?: Error) {
+    ElasticAgent.captureError(transactionError ?? transactionName);
   }
 }

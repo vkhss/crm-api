@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-
 import { MonitoringUtils } from './utils';
 
 describe('Stringify with Max Deeps - Unit Test', () => {
@@ -64,7 +63,7 @@ describe('Stringify with Max Deeps - Unit Test', () => {
     ({ sutObject, expected }) => {
       const result = MonitoringUtils.stringifyObject(sutObject, 0);
       expect(result).toBe(expected);
-    },
+    }
   );
 
   it('broken code when is 0', () => {
@@ -163,7 +162,7 @@ describe('Stringify with Max Deeps - Unit Test', () => {
 
     fs.writeFileSync('teste.json', result);
     expect(result).toBe(
-      '{"valor":"unitário","objB":{"segundo":"teste","objA":{"valor":"unitário","objB":{"segundo":"teste","objA":{"valor":"unitário","objB":"[object]"}}}}}',
+      '{"valor":"unitário","objB":{"segundo":"teste","objA":{"valor":"unitário","objB":{"segundo":"teste","objA":{"valor":"unitário","objB":"[object]"}}}}}'
     );
   });
 });

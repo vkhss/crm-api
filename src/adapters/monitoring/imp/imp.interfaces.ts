@@ -1,33 +1,43 @@
-type ObjectInfo = Record<string, unknown>;
-import { SeverityLevel } from '@sentry/node';
+import { SeverityLevel } from './severity.level.enum';
+
+export type ObjectTags = Record<string, string>;
+
+export type ErrorLog = {
+  transactionName: string;
+  transactionError?: Error;
+  transactionData?: object;
+  transactionTags?: ObjectTags;
+};
+export type TraceLog = {
+  transactionName: string;
+  transactionData: object;
+  transactionTags?: ObjectTags;
+};
 
 export interface IMonitoring {
-
-  monitoringInit: {
-    init(monitoringConfiguration?: IMonitoringConfig): void
-  };
-
-  monitoringCapture: {
-    captureTrace(
-      transactionName?: string,
-      transactionStatus?: SeverityLevel,
-      transactionData?: unknown,
-    ): void;
-    captureError(
-      transactionName?: string,
-      transactionStatus?: SeverityLevel,
-      transactionData?: unknown,
-    ): void;
-  }
+  init(monitoringConfiguration?: IMonitoringConfig): any;
+  captureTrace(
+    transactionName: string,
+    transactionStatus: SeverityLevel,
+    transactionData?: object,
+    transactionTags?: ObjectTags
+  ): any;
+  captureError(
+    transactionName: string,
+    transactionError?: Error,
+    transactionStatus?: SeverityLevel,
+    transactionData?: object,
+    transactionTags?: ObjectTags
+  ): any;
 }
 
 export interface ILogger {
   startMonitoring(config: IMonitoringConfig): void;
-  error(transactionName: string, transactionData: ObjectInfo): void;
-  fatal(transactionName: string, transactionData: ObjectInfo): void;
-  info(transactionName: string, transactionData: ObjectInfo): void;
-  warn(transactionName: string, transactionData: ObjectInfo): void;
-  debug(transactionName: string, transactionData: ObjectInfo): void;
+  error(data: ErrorLog): void;
+  fatal(data: ErrorLog): void;
+  warn(data: TraceLog): void;
+  info(data: TraceLog): void;
+  debug(data: TraceLog): void;
 }
 
 export interface IMonitoringConfig {

@@ -1,23 +1,21 @@
 import * as Sentry from '@sentry/node';
-import * as apm from 'elastic-apm-node';
+import ElasticAgent from 'elastic-apm-node';
 
-import { IMonitoring, IMonitoringConfig } from '../imp.interfaces';
-import { SeverityLevel } from '../imp.severity.enum';
+import { IMonitoring, IMonitoringConfig, ObjectTags } from '../imp.interfaces';
+import { SeverityLevel } from '../severity.level.enum';
 
-const SENTRY_DSN = process.env.SENTRY_DSN;
-const SENTRY_ENV = process.env.SENTRY_ENV;
+const { SENTRY_DSN } = process.env;
+const { SENTRY_ENV } = process.env;
 
-export type InitAndCapture = IMonitoring['monitoringInit'] extends IMonitoring['monitoringInit'];
-
-export class SentryService implements InitAndCapture {
-
+export class SentryService implements IMonitoring {
   private static severities: Record<string, Sentry.SeverityLevel> = {
     [SeverityLevel.WARN]: 'warning',
     [SeverityLevel.ERROR]: 'error',
     [SeverityLevel.FATAL]: 'fatal',
-  }
+  };
 
   public init(config: IMonitoringConfig) {
+    console.log(SENTRY_DSN)
     if (config.INIT_SENTRY)
       Sentry.init({
         dsn: SENTRY_DSN,
@@ -29,33 +27,49 @@ export class SentryService implements InitAndCapture {
   public captureTrace(
     transactionName: string,
     transactionStatus: SeverityLevel,
-    transactionData: unknown,
+    transactionData: object,
+    transactionTags?: ObjectTags
   ) {
     if (transactionStatus === 'info' || transactionStatus === 'debug') return;
-    Sentry.captureMessage(transactionName, {
-      level: SentryService.getSeverity(transactionStatus),
-      extra: {
-        info: transactionData,
-        apmTransactionIds: apm?.currentTransaction?.ids,
-      },
+
+    Sentry.withScope(scope => {
+      scope.setLevel(SentryService.getSeverity(transactionStatus));
+
+      Sentry.setTags(transactionTags ?? {});
+
+      Sentry.captureMessage(transactionName, {
+        level: SentryService.getSeverity(transactionStatus),
+        extra: {
+          info: transactionData,
+          apmTransactionIds: ElasticAgent?.currentTransaction?.ids,
+        },
+      });
     });
   }
 
   public captureError(
     transactionName: string,
+    transactionError: Error,
     transactionStatus: SeverityLevel,
-    transactionData: unknown,
+    transactionData?: object,
+    transactionTags?: ObjectTags
   ) {
-    Sentry.captureMessage(transactionName, {
-      level: SentryService.getSeverity(transactionStatus),
-      extra: {
-        error: transactionData,
-        apmTransactionIds: apm?.currentTransaction?.ids,
-      },
+    Sentry.withScope(scope => {
+      scope.setLevel(SentryService.getSeverity(transactionStatus));
+
+      Sentry.setTags(transactionTags ?? {});
+
+      Sentry.captureMessage(transactionName, {
+        extra: {
+          error: transactionError ?? transactionName,
+          data: transactionData,
+          apmTransactionIds: ElasticAgent?.currentTransaction?.ids,
+        },
+      });
     });
   }
 
   private static getSeverity(severity: SeverityLevel): Sentry.SeverityLevel {
-    return SentryService.severities[severity] || 'error'
+    return SentryService.severities[severity] || 'error';
   }
 }

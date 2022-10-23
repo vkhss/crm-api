@@ -1,42 +1,44 @@
-import * as apm from 'elastic-apm-node';
+import ElasticAgent from 'elastic-apm-node';
 
 import { IMonitoring } from '../imp.interfaces';
 import { MonitoringUtils } from '../utils';
-import { SeverityLevel } from '../imp.severity.enum';
+import { SeverityLevel } from '../severity.level.enum';
 
-export type Capture = IMonitoring['monitoringCapture'];
-
-export class StackDriverService implements Capture {
-
-  public captureError(
-    transactionName: string,
-    transactionStatus: SeverityLevel,
-    transactionData: unknown,
-  ) {
-    console.error(
-      `{"transactionIds":${apm?.currentTransaction?.ids
-      },"severity":${
-        transactionStatus
-      },"name":${transactionName}, "data":${MonitoringUtils.stringifyObject(
-        transactionData,
-        8,
-      )}}`,
-    );
-  }
+export class StackDriverService implements IMonitoring {
+  public init() {}
 
   public captureTrace(
     transactionName: string,
     transactionStatus: SeverityLevel,
-    transactionData: unknown,
+    transactionData: object
   ) {
+    const maxDeep = 8;
     console.log(
-      `{"transactionIds":${apm?.currentTransaction?.ids
-      },"severity":${
-        transactionStatus
-      },"name":${transactionName}, "data":${MonitoringUtils.stringifyObject(
-        transactionData,
-        8,
-      )}}`,
+      JSON.stringify({
+        transactionIds: ElasticAgent?.currentTransaction?.ids,
+        severity: transactionStatus,
+        name: transactionName,
+        data: MonitoringUtils.stringifyObject(transactionData, maxDeep),
+      })
+    );
+  }
+
+  public captureError(
+    transactionName: string,
+    transactionError?: Error,
+    transactionStatus?: SeverityLevel
+  ) {
+    const maxDeep = 8;
+    console.error(
+      JSON.stringify({
+        transactionIds: ElasticAgent?.currentTransaction?.ids,
+        severity: transactionStatus,
+        name: transactionName,
+        error: MonitoringUtils.stringifyObject(
+          transactionError ? transactionError.name : transactionName,
+          maxDeep
+        ),
+      })
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express, { NextFunction } from 'express'
-import * as apm from 'elastic-apm-node';
+import ElasticApmAgent from 'elastic-apm-node';
 import customerRouter from './routers/customers'
 import debugRouter from './routers/debug';
 import { logger } from './instances';
@@ -10,15 +10,16 @@ const PORT = process.env.PORT
 
 const app = express()
 
-apm.start({ captureSpanStackTraces: false });
+logger.startMonitoring()
 
-app.use(apm.middleware.connect());
+ElasticApmAgent.start({ captureSpanStackTraces: false });
+
+app.use(ElasticApmAgent.middleware.connect());
 
 app.use('/', customerRouter);
 app.use('/', debugRouter)
 
 app.use((error: Error, req: any, res: any, next: NextFunction) => {
-    logger.fatal('INTERNAL SERVER ERROR', error)
     res.status(500).json(error)
     next();
 })
